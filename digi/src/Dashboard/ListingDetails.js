@@ -18,13 +18,13 @@ import {
   FiArrowLeft, 
   FiMapPin, 
   FiCalendar, 
-  FiDollarSign, 
   FiStar, 
   FiPhone, 
   FiCreditCard, 
   FiMessageSquare,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiBookOpen
 } from "react-icons/fi";
 
 function ListingDetails() {
@@ -73,8 +73,16 @@ function ListingDetails() {
   }, [slug]);
 
   const handleChatClick = () => {
-    navigate(`/chat/${listing.owner.id}`);
+    navigate(`/chat/${listing.owner}`);
   };
+
+  const handleBooking = () => {
+    navigate(`/booking/${listing.id}`);
+  };
+
+const handleViewBooking = () => {
+  navigate(`/booking/property/${listing.id}`);
+};
 
   const openImageModal = (index) => {
     setSelectedImageIndex(index);
@@ -192,8 +200,7 @@ function ListingDetails() {
                   <p className="text-muted mb-2">{listing.category}</p>
                 </div>
                 <h3 className="text-success mb-0">
-                  <FiDollarSign className="me-1" />
-                  {listing.price?.toLocaleString()}
+                  TZS {listing.price?.toLocaleString()}
                 </h3>
               </div>
 
@@ -274,6 +281,21 @@ function ListingDetails() {
               >
                 <FiMessageSquare className="me-2" /> Chat with Owner
               </Button>
+              <Button 
+                variant="primary" 
+                className="w-100 mt-3" 
+                onClick={handleBooking}
+              >
+                <FiMessageSquare className="me-2" /> Book a Property
+              </Button>
+
+             <Button 
+  variant="secondary" 
+  className="w-100 mt-3" 
+  onClick={handleViewBooking}
+>
+  <FiBookOpen className="me-2" /> View Bookings for this Property
+</Button>
             </Card.Body>
           </Card>
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Added Link import
 import { FaLock, FaEnvelope, FaSignInAlt, FaGoogle, FaFacebook, FaTwitter } from "react-icons/fa";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import axios from "axios";
@@ -54,7 +54,7 @@ function Login() {
         <Row className="justify-content-center align-items-center h-100">
           <Col xs={12} md={8} lg={6} xl={5}>
             <Card className="shadow-lg border-0 rounded-4 overflow-hidden">
-              <div className="login-header text-white text-center p-4">
+              <div className="login-header bg-success text-white text-center p-4">
                 <h2 className="mb-1">Welcome Back</h2>
                 <p className="mb-0">Please login to your account</p>
               </div>
@@ -98,9 +98,9 @@ function Login() {
                       />
                     </div>
                     <div className="text-end mt-2">
-                      <a href="#forgot-password" className="text-decoration-none text-success small">
+                      <Link to="/forgot-password" className="text-decoration-none text-success small">
                         Forgot Password?
-                      </a>
+                      </Link>
                     </div>
                   </Form.Group>
 
@@ -113,20 +113,12 @@ function Login() {
                     {loading ? "Signing In..." : <><FaSignInAlt className="me-2" /> Sign In</>}
                   </Button>
 
-                  <div className="divider d-flex align-items-center my-4">
-                    <p className="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
-                  </div>
-
-                  <div className="d-flex justify-content-center gap-3 mb-4">
-                    <Button variant="outline-danger" className="rounded-circle social-btn"><FaGoogle /></Button>
-                    <Button variant="outline-primary" className="rounded-circle social-btn"><FaFacebook /></Button>
-                    <Button variant="outline-info" className="rounded-circle social-btn"><FaTwitter /></Button>
-                  </div>
-
                   <div className="text-center">
                     <p className="mb-0">
                       Don't have an account?{" "}
-                      <a href="#register" className="text-success fw-bold text-decoration-none">Sign Up</a>
+                      <Link to="/register" className="text-success fw-bold text-decoration-none">
+                        Sign Up
+                      </Link>
                     </p>
                   </div>
                 </Form>

@@ -4,7 +4,7 @@ import { Container, Form, Button, Alert, Spinner, Card } from "react-bootstrap";
 import { FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
 
-function Chat() {
+function ChatSeller() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -17,8 +17,8 @@ function Chat() {
   const messagesEndRef = useRef(null); // For scrolling to bottom
 
   // Extract and log parameters
-  const { listingId, bookingId, ownerId } = state || {};
-  console.log("Navigation state:", { listingId, bookingId, ownerId });
+  const { listingId, bookingId, buyerId } = state || {};
+  console.log("Navigation state:", { listingId, bookingId, buyerId });
 
   // Fetch conversation history
   useEffect(() => {
@@ -26,7 +26,7 @@ function Chat() {
       try {
         const access_token = localStorage.getItem("access_token");
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/messages/conversation/${ownerId}/`,
+          `http://127.0.0.1:8000/api/messages/conversation/${buyerId}/`,
           {
             headers: { Authorization: `Bearer ${access_token}` },
           }
@@ -41,10 +41,10 @@ function Chat() {
       }
     };
 
-    if (ownerId) {
+    if (buyerId) {
       fetchConversation();
     }
-  }, [ownerId]);
+  }, [buyerId]);
 
   // Scroll to bottom of messages when they update
   useEffect(() => {
@@ -60,7 +60,7 @@ function Chat() {
     try {
       const access_token = localStorage.getItem("access_token");
       console.log("Sending payload:", {
-        receiver: ownerId,
+        receiver: buyerId,
         listing: listingId,
         booking: bookingId,
         message_text: message,
@@ -68,7 +68,7 @@ function Chat() {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/messages/send/",
         {
-          receiver: ownerId,
+          receiver: buyerId,
           listing: listingId,
           booking: bookingId,
           message_text: message,
@@ -81,7 +81,7 @@ function Chat() {
       );
       setSuccess("Message sent successfully!");
       setMessage("");
-      // Append new message (response.data should include full sender/receiver objects)
+      // Append new message
       setMessages([...messages, response.data]);
       console.log("Send response:", response.data);
     } catch (err) {
@@ -96,7 +96,7 @@ function Chat() {
     }
   };
 
-  if (!listingId || !bookingId || !ownerId) {
+  if (!listingId || !bookingId || !buyerId) {
     return (
       <Container className="py-4">
         <Alert variant="danger">
@@ -123,7 +123,7 @@ function Chat() {
       </Button>
 
       <h2 className="mb-4">
-        Chat with Owner (Listing #{listingId}, Booking #{bookingId})
+        Chat with Customer (Listing #{listingId}, Booking #{bookingId})
       </h2>
 
       {error && <Alert variant="danger">{error}</Alert>}
@@ -219,4 +219,4 @@ function Chat() {
   );
 }
 
-export default Chat;
+export default ChatSeller;

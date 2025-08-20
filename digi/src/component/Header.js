@@ -1,201 +1,229 @@
-import React from "react";
-import { 
-  Container, 
-  Navbar, 
-  Nav, 
-  Button, 
-  Dropdown,
-  Form,
-  InputGroup
-} from "react-bootstrap";
-import { 
-  FaPhoneAlt, 
-  FaUser, 
-  FaFacebook, 
-  FaTwitter, 
-  FaLinkedin, 
-  FaGooglePlus,
-  FaSearch,
-  FaBell,
-  FaEnvelope,
-  FaShoppingCart
-} from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { Container, Navbar, Nav, Button, Dropdown, Form, InputGroup } from "react-bootstrap";
+import { FaPhoneAlt, FaUser, FaSearch, FaHome, FaInfoCircle, FaEnvelope } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const [user, setUser] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch user info
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        setUser(null); // Ensure user is null when no token exists
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/user/me/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch user");
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error(err);
+        setUser(null); // Set user to null on error
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    setUser(null);
+    navigate("/login");
+  };
+
   return (
-    <header className="sticky-top">
-      {/* Top Bar */}
-      <div className="top-bar bg-dark text-light py-2">
-        <Container>
-          <div className="d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              <span className="me-3"><FaPhoneAlt className="me-2" /> +1-234-567-8901</span>
-              <span><MdLocationOn className="me-2" /> Nairobi, Kenya</span>
-            </div>
-            <div className="d-flex align-items-center">
-              <Dropdown>
-                <Dropdown.Toggle variant="dark" id="language-dropdown" size="sm">
-                  English
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item>Swahili</Dropdown.Item>
-                  <Dropdown.Item>French</Dropdown.Item>
-                  <Dropdown.Item>Spanish</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <div className="social-icons ms-3">
-                <a href="#" className="text-light mx-2"><FaFacebook /></a>
-                <a href="#" className="text-light mx-2"><FaTwitter /></a>
-                <a href="#" className="text-light mx-2"><FaLinkedin /></a>
-                <a href="#" className="text-light mx-2"><FaGooglePlus /></a>
-              </div>
-            </div>
+    <header className={`sticky-top ${scrolled ? 'header-scrolled' : ''}`}>
+      {/* Top Contact Bar */}
+      <div className="top-bar bg-primary text-white py-2">
+        <Container className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <span className="me-3"><FaPhoneAlt className="me-2" /> +255-777-000-111</span>
+            <span><MdLocationOn className="me-2" /> Zanzibar, Tanzania</span>
           </div>
+          {user ? (
+            <span className="d-none d-md-block">
+              Welcome
+            </span>
+          ) : null}
         </Container>
       </div>
 
       {/* Main Navigation */}
-      <Navbar bg="white" expand="lg" className="py-3 shadow-sm">
+      <Navbar expand="lg" className="main-navbar py-3">
         <Container>
-          <Navbar.Brand href="#" className="d-flex align-items-center">
+          <Navbar.Brand href="/" className="d-flex align-items-center">
             <img 
-              src="https://via.placeholder.com/150x50?text=DALALI" 
-              alt="Dalali Logo" 
-              className="me-2"
-              style={{ height: '40px' }}
+              src="https://via.placeholder.com/180x50?text=REALESTATE" 
+              alt="Company Logo" 
+              className="brand-logo"
             />
           </Navbar.Brand>
-          
-          {/* Search Bar */}
-          <div className="search-bar mx-4 flex-grow-1">
+
+          <div className="search-bar mx-lg-4 flex-grow-1">
             <InputGroup>
-              <Form.Control
-                type="search"
-                placeholder="Search for properties, cars, items..."
-                aria-label="Search"
-                className="border-end-0"
+              <Form.Control 
+                type="search" 
+                placeholder="Search properties..." 
+                className="search-input border-end-0"
               />
-              <Button variant="outline-success" className="border-start-0">
+              <Button variant="primary" className="search-button">
                 <FaSearch />
               </Button>
             </InputGroup>
           </div>
 
-          {/* User Actions */}
-          <div className="user-actions d-flex align-items-center">
-            <Button variant="outline-secondary" className="me-2 position-relative">
-              <FaBell />
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                3
-              </span>
-            </Button>
-            <Button variant="outline-secondary" className="me-2 position-relative">
-              <FaEnvelope />
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                5
-              </span>
-            </Button>
-            <Button variant="outline-secondary" className="me-3 position-relative">
-              <FaShoppingCart />
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                2
-              </span>
-            </Button>
-            
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="user-dropdown">
-                <FaUser className="me-2" /> My Account
-              </Dropdown.Toggle>
-              <Dropdown.Menu align="end">
-                <Dropdown.Item>Profile</Dropdown.Item>
-                <Dropdown.Item>Messages</Dropdown.Item>
-                <Dropdown.Item>Orders</Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item>Logout</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0">
+            <span className="navbar-toggler-icon"></span>
+          </Navbar.Toggle>
 
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        </Container>
-      </Navbar>
+          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+            <Nav className="align-items-center">
+              {/* Main Navigation Links */}
+              <Nav.Link href="/dashboard" className="nav-link mx-2">
+                <FaHome className="me-1" /> Home
+              </Nav.Link>
+              <Nav.Link href="/about" className="nav-link mx-2">
+                <FaInfoCircle className="me-1" /> About
+              </Nav.Link>
+              <Nav.Link href="/contact" className="nav-link mx-2">
+                <FaEnvelope className="me-1" /> Contact
+              </Nav.Link>
 
-      {/* Secondary Navigation */}
-      <Navbar bg="success" expand="lg" className="py-2">
-        <Container>
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="#" className="text-white px-3">Home</Nav.Link>
-              <Dropdown>
-                <Dropdown.Toggle variant="success" id="properties-dropdown" className="px-3">
-                  Properties
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item>Houses</Dropdown.Item>
-                  <Dropdown.Item>Apartments</Dropdown.Item>
-                  <Dropdown.Item>Land</Dropdown.Item>
-                  <Dropdown.Item>Commercial</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <Dropdown>
-                <Dropdown.Toggle variant="success" id="vehicles-dropdown" className="px-3">
-                  Vehicles
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item>Cars</Dropdown.Item>
-                  <Dropdown.Item>Motorcycles</Dropdown.Item>
-                  <Dropdown.Item>Trucks</Dropdown.Item>
-                  <Dropdown.Item>Buses</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <Nav.Link href="#" className="text-white px-3">Machinery</Nav.Link>
-              <Nav.Link href="#" className="text-white px-3">Services</Nav.Link>
-              <Nav.Link href="#" className="text-white px-3">Blog</Nav.Link>
-              <Nav.Link href="#" className="text-white px-3">Contact</Nav.Link>
+              {/* User Actions - Only show when logged in */}
+              {user ? (
+                <Dropdown className="ms-lg-3">
+                  <Dropdown.Toggle variant="outline-primary" id="user-dropdown" className="user-dropdown">
+                    <FaUser className="me-2" /> Account
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu align="end" className="dropdown-menu-end">
+                    <Dropdown.Item href="/profile">My Profile</Dropdown.Item>
+                    {user.role === "Seller" && (
+                      <Dropdown.Item href="/seller/dashboard">Seller Dashboard</Dropdown.Item>
+                    )}
+                    <Dropdown.Divider />
+                    <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              ) : (
+                <div className="d-flex ms-lg-3">
+                  <Button 
+                    variant="outline-primary" 
+                    className="me-2" 
+                    onClick={() => navigate("/login")}
+                  >
+                    Login
+                  </Button>
+                  <Button 
+                    variant="primary" 
+                    onClick={() => navigate("/register")}
+                  >
+                    Register
+                  </Button>
+                </div>
+              )}
             </Nav>
-            <Button variant="light" className="ms-3">
-              Post Free Ad
-            </Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      {/* Custom CSS */}
-      <style jsx>{`
-        .top-bar {
-          font-size: 0.85rem;
+      <style jsx global>{`
+        :root {
+          --primary-color: #2c3e50;
+          --secondary-color: #3498db;
+          --text-color: #333;
+          --light-bg: #f8f9fa;
         }
-        .social-icons a {
+        
+        .top-bar {
+          font-size: 0.9rem;
+        }
+        
+        .main-navbar {
+          background-color: white;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-scrolled .main-navbar {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .brand-logo {
+          height: 40px;
           transition: all 0.3s ease;
         }
-        .social-icons a:hover {
-          color: #28a745 !important;
-          transform: translateY(-2px);
-        }
+        
         .search-bar {
-          max-width: 600px;
+          max-width: 500px;
         }
-        .user-actions .btn {
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
+        
+        .search-input {
+          border-radius: 4px 0 0 4px !important;
+          border-color: #ddd;
+        }
+        
+        .search-button {
+          border-radius: 0 4px 4px 0 !important;
+        }
+        
+        .nav-link {
+          color: var(--text-color) !important;
+          font-weight: 500;
+          padding: 0.5rem 1rem !important;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover, .nav-link:focus {
+          color: var(--secondary-color) !important;
+          background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .nav-link.active {
+          color: var(--secondary-color) !important;
+          font-weight: 600;
+        }
+        
+        .user-dropdown {
+          border-radius: 4px;
+          padding: 0.5rem 1rem;
           display: flex;
           align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
         }
-        .user-actions .btn:hover {
-          background-color: #f8f9fa;
-          transform: translateY(-2px);
-        }
-        .badge {
-          font-size: 0.6rem;
-          padding: 0.25em 0.4em;
-        }
-        .dropdown-toggle::after {
-          margin-left: 0.5em;
-          vertical-align: 0.15em;
+        
+        @media (max-width: 991.98px) {
+          .search-bar {
+            margin: 1rem 0;
+            width: 100%;
+          }
+          
+          .nav-link {
+            margin: 0.25rem 0 !important;
+          }
         }
       `}</style>
     </header>

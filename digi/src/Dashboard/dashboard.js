@@ -288,10 +288,10 @@ function Dashboard() {
               <div className="d-flex justify-content-between">
                 <div>
                   <h6 className="text-muted mb-2">Total Value</h6>
-                  <h3 className="mb-0">${listings.reduce((sum, l) => sum + (l.price || 0), 0).toLocaleString()}</h3>
+                  <h3 className="mb-0">TZS {listings.reduce((sum, listing) => sum + (parseFloat(listing.price) || 0), 0).toLocaleString()}</h3>
                 </div>
-                <div className="icon-circle bg-warning-light">
-                  <FiDollarSign className="text-warning" />
+                <div className="icon-circle bg-info-light">
+                  <FiDollarSign className="text-info" />
                 </div>
               </div>
             </Card.Body>
@@ -393,7 +393,7 @@ function Dashboard() {
                     <Card.Body>
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <Card.Title className="mb-0 text-truncate">{listing.title}</Card.Title>
-                        <h5 className="text-success mb-0">${listing.price?.toLocaleString()}</h5>
+                        <h5 className="text-success mb-0">TZS {listing.price?.toLocaleString()}</h5>
                       </div>
                       <Card.Subtitle className="text-muted mb-2">
                         <FiMapPin className="me-1" /> {listing.location}
@@ -517,6 +517,9 @@ function Dashboard() {
         }
         .bg-warning-light {
           background-color: rgba(255, 193, 7, 0.1);
+        }
+        .bg-info-light {
+          background-color: rgba(13, 202, 240, 0.1);
         }
         .listing-card {
           border-radius: 10px;
